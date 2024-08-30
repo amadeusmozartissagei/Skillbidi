@@ -28,7 +28,7 @@ const model = genAI.getGenerativeModel({
 const chat = model.startChat({
   history: [],
   generationConfig:{
-    macOutputTokens: 100,
+    maxOutputTokens: 100,
   }
 })
 
