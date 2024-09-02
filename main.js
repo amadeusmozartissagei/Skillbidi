@@ -13,6 +13,14 @@ const API_KEY = 'AIzaSyArLHGCVHh-x2eINAJJhPlCdtNkJba5LwA';
 let form = document.querySelector('form');
 let promptInput = document.querySelector('input[name="prompt"]');
 let output = document.querySelector('.output');
+
+const answerSection = document.getElementById('answerSection');
+const userAnswer = document.getElementById('userAnswer');
+const submitAnswerBtn = document.getElementById('submitAnswerBtn');
+const feedback = document.getElementById('feedback');
+const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+const correctAnswerBtn = document.getElementById('correctAnswerBtn');
+
 // let getValue = document.querySelector('#submit-button')
 
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -50,8 +58,57 @@ form.onsubmit = async (ev) => {
       buffer.push(response.text());
       output.innerHTML = md.render(buffer.join(''));
     }
+     // Tampilkan input jawaban setelah pertanyaan selesai
+     answerSection.style.display = 'block';
+     feedback.innerHTML = ''; // Kosongkan feedback sebelumnya
+     submitAnswerBtn.addEventListener('click', async () => {
+      const userResponse = userAnswer.value;
+      const correctionPrompt = `Periksa jawaban berikut terhadap pertanyaan ini: ${output.innerText}. Jawaban: ${userResponse}`;
+      
+      try {
+        const correctionResult = await chat.sendMessageStream(correctionPrompt);
+        let correctionBuffer = [];
+        for await (let response of correctionResult.stream) {
+          correctionBuffer.push(response.text());
+          feedback.innerHTML = correctionBuffer.join('');
+        }
+        userAnswer.value = '';
+        nextQuestionBtn.style.display = 'inline-block';
+        correctAnswerBtn.style.display = 'inline-block';
+      } catch (e) {
+        feedback.innerHTML = `
+      <div class="error-message">
+        <hr>
+        <p>Terjadi kesalahan pada website. Harap reload halaman ini.</p>
+      </div>
+    `;
+      }
+    });
+
+    nextQuestionBtn.addEventListener('click', () => {
+      // Reset ke kondisi awal
+      output.innerHTML = '';
+      feedback.innerHTML = '';
+      promptInput.value = '';
+      answerSection.style.display = 'none';
+      nextQuestionBtn.style.display = 'none';
+      correctAnswerBtn.style.display = 'none';
+    });
+
+    correctAnswerBtn.addEventListener('click', () => {
+      // Tampilkan input baru untuk koreksi jawaban
+      userAnswer.value = ''; // Kosongkan input jawaban
+      feedback.innerHTML = ''; // Kosongkan feedback sebelumnya
+      nextQuestionBtn.style.display = 'none';
+      correctAnswerBtn.style.display = 'none';
+    });
   } catch (e) {
-    output.innerHTML += '<hr>' + e;
+    output.innerHTML += `
+    <div class="error-message">
+      <hr>
+      <p>Terjadi kesalahan pada website. Harap reload halaman ini.</p>
+    </div>
+  `;
   }
 };
 

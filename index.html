@@ -35,7 +35,15 @@
       </div>
     </form>
     <p class="output">results will appear here...</p>
-
+    <div id="answerSection" style="display: none;">
+      <input type="text" id="userAnswer" placeholder="Jawaban Anda" />
+      <button id="submitAnswerBtn">Submit Answer</button>
+      <div id="feedback"></div>
+      <div class="button-group">
+        <button id="nextQuestionBtn" style="display: none;">Pertanyaan Selanjutnya</button>
+        <button id="correctAnswerBtn" style="display: none;">Koreksi Jawaban Lagi</button>
+      </div>
+    </div>
 
   <script type="module" src="/main.js"></script>
 </body>
