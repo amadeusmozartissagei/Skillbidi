@@ -8,11 +8,12 @@ import './style.css';
 // Get your Gemini API key by:
 // - Selecting "Add Gemini API" in the "Project IDX" panel in the sidebar
 // - Or by visiting https://g.co/ai/idxGetGeminiKey
-let API_KEY = 'AIzaSyArLHGCVHh-x2eINAJJhPlCdtNkJba5LwA';
+const API_KEY = 'AIzaSyArLHGCVHh-x2eINAJJhPlCdtNkJba5LwA';
 
 let form = document.querySelector('form');
 let promptInput = document.querySelector('input[name="prompt"]');
 let output = document.querySelector('.output');
+// let getValue = document.querySelector('#submit-button')
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({
@@ -37,7 +38,28 @@ form.onsubmit = async (ev) => {
   output.textContent = 'Generating...';
 
   try {
-    // Load the image as a base64 string
+  
+    const prompt = `buat satu soal mengenai ${promptInput.value} tanpa memunculkan jawabannya. setelah saya menjawab, silahkan dikoreksi`;
+
+    const result = await chat.sendMessageStream(prompt);
+
+    // Read from the stream and interpret the output as markdown
+    let buffer = [];
+    let md = new MarkdownIt();
+    for await (let response of result.stream) {
+      buffer.push(response.text());
+      output.innerHTML = md.render(buffer.join(''));
+    }
+  } catch (e) {
+    output.innerHTML += '<hr>' + e;
+  }
+};
+
+// You can delete this once you've filled out an API key
+maybeShowApiKeyBanner(API_KEY);
+
+
+  // Load the image as a base64 string
     // let imageUrl = form.elements.namedItem('chosen-image').value;
     // let imageBase64 = await fetch(imageUrl)
     //   .then(r => r.arrayBuffer())
@@ -65,22 +87,3 @@ form.onsubmit = async (ev) => {
     //     },
     //   ],
     // });
-
-    const prompt = promptInput.value;
-
-    const result = await chat.sendMessageStream(prompt);
-
-    // Read from the stream and interpret the output as markdown
-    let buffer = [];
-    let md = new MarkdownIt();
-    for await (let response of result.stream) {
-      buffer.push(response.text());
-      output.innerHTML = md.render(buffer.join(''));
-    }
-  } catch (e) {
-    output.innerHTML += '<hr>' + e;
-  }
-};
-
-// You can delete this once you've filled out an API key
-maybeShowApiKeyBanner(API_KEY);
