@@ -13,15 +13,9 @@ const API_KEY = 'AIzaSyArLHGCVHh-x2eINAJJhPlCdtNkJba5LwA';
 let form = document.querySelector('form');
 let promptInput = document.querySelector('input[name="prompt"]');
 let output = document.querySelector('.output');
+let submitButton = document.querySelector('#submit-button');
 
-const answerSection = document.getElementById('answerSection');
-const userAnswer = document.getElementById('userAnswer');
-const submitAnswerBtn = document.getElementById('submitAnswerBtn');
-const feedback = document.getElementById('feedback');
-const nextQuestionBtn = document.getElementById('nextQuestionBtn');
-const correctAnswerBtn = document.getElementById('correctAnswerBtn');
-
-// let getValue = document.querySelector('#submit-button')
+let state = 'quiz'; // 'quiz', 'answer', atau 'reset'
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({
@@ -43,104 +37,76 @@ const chat = model.startChat({
 
 form.onsubmit = async (ev) => {
   ev.preventDefault();
-  output.textContent = 'Generating...';
+  output.textContent = 'Memproses...';
 
   try {
-  
-    const prompt = `buat satu soal mengenai ${promptInput.value} tanpa memunculkan jawabannya. setelah saya menjawab, silahkan dikoreksi`;
-
-    const result = await chat.sendMessageStream(prompt);
-
-    // Read from the stream and interpret the output as markdown
-    let buffer = [];
-    let md = new MarkdownIt();
-    for await (let response of result.stream) {
-      buffer.push(response.text());
-      output.innerHTML = md.render(buffer.join(''));
-    }
-     // Tampilkan input jawaban setelah pertanyaan selesai
-     answerSection.style.display = 'block';
-     feedback.innerHTML = ''; // Kosongkan feedback sebelumnya
-     submitAnswerBtn.addEventListener('click', async () => {
-      const userResponse = userAnswer.value;
-      const correctionPrompt = `Periksa jawaban berikut terhadap pertanyaan ini: ${output.innerText}. Jawaban: ${userResponse}`;
+    if (state === 'quiz') {
+      const prompt = `buat satu soal mengenai ${promptInput.value} tanpa memunculkan jawabannya.`;
+      const result = await chat.sendMessage(prompt);
       
-      try {
-        const correctionResult = await chat.sendMessageStream(correctionPrompt);
-        let correctionBuffer = [];
-        for await (let response of correctionResult.stream) {
-          correctionBuffer.push(response.text());
-          feedback.innerHTML = correctionBuffer.join('');
-        }
-        userAnswer.value = '';
-        nextQuestionBtn.style.display = 'inline-block';
-        correctAnswerBtn.style.display = 'inline-block';
-      } catch (e) {
-        feedback.innerHTML = `
-      <div class="error-message">
-        <hr>
-        <p>Terjadi kesalahan pada website. Harap reload halaman ini.</p>
-      </div>
-    `;
-      }
-    });
+      let md = new MarkdownIt();
+      output.innerHTML = md.render(result.response.text());
 
-    nextQuestionBtn.addEventListener('click', () => {
-      // Reset ke kondisi awal
-      output.innerHTML = '';
-      feedback.innerHTML = '';
+      state = 'answer';
       promptInput.value = '';
-      answerSection.style.display = 'none';
-      nextQuestionBtn.style.display = 'none';
-      correctAnswerBtn.style.display = 'none';
-    });
+      promptInput.placeholder = 'Masukkan jawaban Anda di sini';
+      submitButton.textContent = 'Kirim Jawaban';
+    } else if (state === 'answer') {
+      const userResponse = promptInput.value;
+      const correctionPrompt = `Periksa jawaban berikut terhadap pertanyaan ini: ${output.innerText}. Jawaban: ${userResponse}. Berikan penjelasan singkat apakah jawaban benar atau salah, dan berikan jawaban yang benar jika salah.`;
+      
+      const correctionResult = await chat.sendMessage(correctionPrompt);
+      let md = new MarkdownIt();
+      output.innerHTML += '<h3>Hasil Koreksi:</h3>' + md.render(correctionResult.response.text());
 
-    correctAnswerBtn.addEventListener('click', () => {
-      // Tampilkan input baru untuk koreksi jawaban
-      userAnswer.value = ''; // Kosongkan input jawaban
-      feedback.innerHTML = ''; // Kosongkan feedback sebelumnya
-      nextQuestionBtn.style.display = 'none';
-      correctAnswerBtn.style.display = 'none';
-    });
+      state = 'reset';
+      promptInput.value = '';
+      promptInput.placeholder = 'Klik untuk kembali ke awal';
+      submitButton.textContent = 'Mulai Lagi';
+    } else if (state === 'reset') {
+      state = 'quiz';
+      output.textContent = 'Hasil akan muncul di sini...';
+      promptInput.placeholder = 'Masukkan topik untuk pertanyaan baru';
+      submitButton.textContent = 'Buat Pertanyaan';
+    }
   } catch (e) {
     output.innerHTML += `
     <div class="error-message">
       <hr>
       <p>Terjadi kesalahan pada website. Harap reload halaman ini.</p>
     </div>
-  `;
+    `;
   }
 };
 
 // You can delete this once you've filled out an API key
 maybeShowApiKeyBanner(API_KEY);
 
+// Load the image as a base64 string
+// let imageUrl = form.elements.namedItem('chosen-image').value;
+// let imageBase64 = await fetch(imageUrl)
+//   .then(r => r.arrayBuffer())
+//   .then(a => Base64.fromByteArray(new Uint8Array(a)));
 
-  // Load the image as a base64 string
-    // let imageUrl = form.elements.namedItem('chosen-image').value;
-    // let imageBase64 = await fetch(imageUrl)
-    //   .then(r => r.arrayBuffer())
-    //   .then(a => Base64.fromByteArray(new Uint8Array(a)));
+// Assemble the prompt by combining the text with the chosen image
+// let contents = [
+//   {
+//     role: 'user',
+//     parts: [
+//       // { inline_data: { mime_type: 'image/jpeg', data: imageBase64, } },
+//       { text: promptInput.value }
+//     ]
+//   }
+// ];
 
-    // Assemble the prompt by combining the text with the chosen image
-    // let contents = [
-    //   {
-    //     role: 'user',
-    //     parts: [
-    //       // { inline_data: { mime_type: 'image/jpeg', data: imageBase64, } },
-    //       { text: promptInput.value }
-    //     ]
-    //   }
-    // ];
-
-    // Call the multimodal model, and get a stream of results
-    // const genAI = new GoogleGenerativeAI(API_KEY);
-    // const model = genAI.getGenerativeModel({
-    //   model: "gemini-1.5-flash", // or gemini-1.5-pro
-    //   safetySettings: [
-    //     {
-    //       category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-    //       threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-    //     },
-    //   ],
-    // });
+// Call the multimodal model, and get a stream of results
+// const genAI = new GoogleGenerativeAI(API_KEY);
+// const model = genAI.getGenerativeModel({
+//   model: "gemini-1.5-flash", // or gemini-1.5-pro
+//   safetySettings: [
+//     {
+//       category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+//       threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+//     },
+//   ],
+// });
