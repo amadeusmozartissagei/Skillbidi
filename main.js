@@ -35,13 +35,29 @@ const chat = model.startChat({
   }
 })
 
-form.onsubmit = async (ev) => {
-  ev.preventDefault();
-  output.textContent = 'Memproses...';
+let topicButtons = document.querySelector('.topic-buttons');
 
-  try {
-    if (state === 'quiz') {
-      const prompt = `buat satu soal mengenai ${promptInput.value} tanpa memunculkan jawabannya.`;
+// Fungsi untuk menyembunyikan tombol topik
+function hideTopicButtons() {
+  topicButtons.style.display = 'none';
+}
+
+// Fungsi untuk menampilkan tombol topik
+function showTopicButtons() {
+  topicButtons.style.display = 'flex';
+}
+
+// Modifikasi event listener untuk tombol topik
+document.querySelectorAll('.topic-btn').forEach(button => {
+  button.addEventListener('click', async () => {
+    const topic = button.dataset.topic;
+    promptInput.value = topic;
+    hideTopicButtons();
+    
+    // Otomatis generate pertanyaan
+    output.textContent = 'Memproses...';
+    try {
+      const prompt = `buat satu soal mengenai ${topic} tanpa memunculkan jawabannya.`;
       const result = await chat.sendMessage(prompt);
       
       let md = new MarkdownIt();
@@ -51,7 +67,24 @@ form.onsubmit = async (ev) => {
       promptInput.value = '';
       promptInput.placeholder = 'Masukkan jawaban Anda di sini';
       submitButton.textContent = 'Kirim Jawaban';
-    } else if (state === 'answer') {
+    } catch (e) {
+      output.innerHTML += `
+      <div class="error-message">
+        <hr>
+        <p>Terjadi kesalahan pada website. Harap reload halaman ini.</p>
+      </div>
+      `;
+    }
+  });
+});
+
+// Modifikasi form.onsubmit
+form.onsubmit = async (ev) => {
+  ev.preventDefault();
+  output.textContent = 'Memproses...';
+
+  try {
+    if (state === 'answer') {
       const userResponse = promptInput.value;
       const correctionPrompt = `Periksa jawaban berikut terhadap pertanyaan ini: ${output.innerText}. Jawaban: ${userResponse}. Berikan penjelasan singkat apakah jawaban benar atau salah, dan berikan jawaban yang benar jika salah.`;
       
@@ -66,8 +99,9 @@ form.onsubmit = async (ev) => {
     } else if (state === 'reset') {
       state = 'quiz';
       output.textContent = 'Hasil akan muncul di sini...';
-      promptInput.placeholder = 'Masukkan topik untuk pertanyaan baru';
+      promptInput.placeholder = 'Pilih topik atau masukkan topik baru';
       submitButton.textContent = 'Buat Pertanyaan';
+      showTopicButtons();
     }
   } catch (e) {
     output.innerHTML += `
@@ -110,3 +144,11 @@ maybeShowApiKeyBanner(API_KEY);
 //     },
 //   ],
 // });
+
+// Tambahkan event listener untuk tombol topik
+document.querySelectorAll('.topic-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    const topic = button.dataset.topic;
+    document.querySelector('input[name="prompt"]').value = topic;
+  });
+});

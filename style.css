@@ -168,3 +168,26 @@ button:hover {
   border-top: 1px solid #f44336; /* Garis horizontal merah */
   margin: 10px 0;
 }
+
+.topic-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.topic-btn {
+  flex: 1 0 calc(50% - 4px);
+  padding: 10px;
+  border: 1px solid var(--accent-color);
+  background-color: white;
+  color: var(--accent-color);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.topic-btn:hover, .topic-btn:focus {
+  background-color: var(--accent-color);
+  color: white;
+}
