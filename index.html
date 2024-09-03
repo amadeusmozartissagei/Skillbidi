@@ -1,43 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css">
-  <title>Skillbidi</title>
-</head>
-
-<body>
-  <main>
-    <h1>Skillbidi: </h1>
-    <h3>Turn Your Free Time into Skill Time!</h3>
-    <form>
-      <div class="topic-buttons">
-        <button type="button" class="topic-btn" data-topic="Communication">Communication</button>
-        <button type="button" class="topic-btn" data-topic="Time Management">Time Management</button>
-        <button type="button" class="topic-btn" data-topic="Problem-Solving">Problem-Solving</button>
-        <button type="button" class="topic-btn" data-topic="Critical Thinking">Critical Thinking</button>
-      </div>
-      <div class="prompt-box">
-        <label>
-          <input name="prompt" placeholder="To kill some time, I'm gonna learn about .... " type="text">
-        </label>
-        <button type="submit" id="submit-button">Go</button>
-      </div>
-    </form>
-    <p class="output">results will appear here...</p>
-    <div id="answerSection" style="display: none;">
-      <input type="text" id="userAnswer" placeholder="Jawaban Anda" />
-      <button id="submitAnswerBtn">Submit Answer</button>
-      <div id="feedback"></div>
-      <div class="button-group">
-        <button id="nextQuestionBtn" style="display: none;">Pertanyaan Selanjutnya</button>
-        <button id="correctAnswerBtn" style="display: none;">Koreksi Jawaban Lagi</button>
-      </div>
-    </div>
-
-  <script type="module" src="/main.js"></script>
-</body>
-
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Skillbidi</title>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.jsx"></script>
+    </body>
 </html>
