@@ -8,7 +8,7 @@ const API_KEY = 'AIzaSyArLHGCVHh-x2eINAJJhPlCdtNkJba5LwA';
 
 export default function App() {
   const [state, setState] = useState('quiz');
-  const [output, setOutput] = useState('Hasil akan muncul di sini...');
+  const [outputmain, setOutputMain] = useState('Hasil akan muncul di sini...');
   const [prompt, setPrompt] = useState('');
   const promptInputRef = useRef(null);
   const outputRef = useRef(null);
@@ -37,14 +37,14 @@ export default function App() {
 
   const handleSubmit = async (ev) => {
     ev.preventDefault();
-    setOutput('Memproses...');
+    setOutputMain('Memproses...');
 
     try {
       if (state === 'quiz') {
         const quizPrompt = `Berikan satu pertanyaan singkat tentang topik: ${prompt}`;
         const result = await chat.sendMessage(quizPrompt);
         let md = new MarkdownIt();
-        setOutput(md.render(result.response.text()));
+        setOutputMain(md.render(result.response.text()));
         setState('answer');
         promptInputRef.current.value = '';
         promptInputRef.current.placeholder = 'Masukkan jawaban Anda';
@@ -54,18 +54,18 @@ export default function App() {
 
         const correctionResult = await chat.sendMessage(correctionPrompt);
         let md = new MarkdownIt();
-        setOutput(prev => prev + '<h3>Hasil Koreksi:</h3>' + md.render(correctionResult.response.text()));
+        setOutputMain(prev => prev + '<h3>Hasil Koreksi:</h3>' + md.render(correctionResult.response.text()));
 
         setState('reset');
         promptInputRef.current.value = '';
         promptInputRef.current.placeholder = 'Klik untuk kembali ke awal';
       } else if (state === 'reset') {
         setState('quiz');
-        setOutput('Hasil akan muncul di sini...');
+        setOutputMain('Hasil akan muncul di sini...');
         promptInputRef.current.placeholder = 'Pilih topik atau masukkan topik baru';
       }
     } catch (e) {
-      setOutput(prev => prev + `
+      setOutputMain(prev => prev + `
         <div class="error-message">
           <hr>
           <p>Terjadi kesalahan: ${e.message}</p>
@@ -79,7 +79,7 @@ export default function App() {
       <h1>Skillbidi: </h1>
       <h3>Turn Your Free Time into Skill Time!</h3>
       <form onSubmit={handleSubmit}>
-        <TopicButton />
+        <TopicButton setPrompt={setPrompt} genAI={genAI} setState={setState} setOutputMain={setOutputMain}/>
         <div className="prompt-box">
           <label>
             <input
@@ -95,7 +95,7 @@ export default function App() {
           </button>
         </div>
       </form>
-      <p className="output" ref={outputRef} dangerouslySetInnerHTML={{ __html: output }}></p>
+      <p className="outputmain" ref={outputRef} dangerouslySetInnerHTML={{ __html: outputmain }}></p>
     </div>
   );
 }

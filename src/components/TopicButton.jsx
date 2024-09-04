@@ -1,65 +1,73 @@
 import React, { useState } from 'react';
+import MarkdownIt from 'markdown-it';
 
 // Komponen TopicButton
-export default function TopicButton() {
+export default function TopicButton({ setPrompt, genAI, setState, setOutputMain }) {
   const topics = ['Communication', 'Time Management', 'Problem Solving', 'Critical Thinking'];
   
-  // State untuk mengontrol tampilan tombol
   const [showButtons, setShowButtons] = useState(true);
-  const [output, setOutput] = useState(''); // State untuk output
-  const [promptInput, setPromptInput] = useState(''); // State untuk input prompt
+  const [output, setOutput] = useState('');
   
-  // Fungsi untuk menyembunyikan tombol topik
   const hideTopicButtons = () => {
     setShowButtons(false);
   };
 
-  // Fungsi untuk menampilkan tombol topik
   const showTopicButtons = () => {
     setShowButtons(true);
+    setOutput('');
   };
 
-  // Event handler untuk klik tombol topik
   const handleClick = async (topic) => {
-    setPromptInput(topic);
+    setPrompt(topic);
+    setState('answer');
+    setOutputMain(' ');
     hideTopicButtons();
 
-    // Otomatis generate pertanyaan
     setOutput('Memproses...');
     try {
-      const prompt = `buat satu soal mengenai ${topic} tanpa memunculkan jawabannya.`;
-      const result = await chat.sendMessage(prompt); // Asumsikan chat.sendMessage tersedia dan bekerja
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const chat = model.startChat({
+        history: [],
+        generationConfig: {
+          maxOutputTokens: 1000,
+        },
+      });
 
-      // Render output yang dihasilkan dari chat.sendMessage
+      const prompt = `Buat satu soal mengenai ${topic} tanpa memunculkan jawabannya.`;
+      const result = await chat.sendMessage(prompt);
+
       const md = new MarkdownIt();
       setOutput(md.render(result.response.text()));
-
-      setPromptInput('');
     } catch (e) {
       setOutput(`
         <div class="error-message">
           <hr>
-          <p>Terjadi kesalahan pada website. Harap reload halaman ini.</p>
+          <p>Terjadi kesalahan: ${e.message}</p>
         </div>
       `);
     }
   };
 
   return (
-    <div className="topic-buttons" style={{ display: showButtons ? 'flex' : 'none' }}>
-      {topics.map((topic, index) => (
-        <button
-          key={index}
-          type="button"
-          className="topic-btn"
-          data-topic={topic}
-          onClick={() => handleClick(topic)} // Memanggil handleClick dengan topik terkait
-        >
-          {topic}
-        </button>
-      ))}
+    <div>
+      <div className="topic-buttons" style={{ display: showButtons ? 'flex' : 'none' }}>
+        {topics.map((topic, index) => (
+          <button
+            key={index}
+            type="button"
+            className="topic-btn"
+            data-topic={topic}
+            onClick={() => handleClick(topic)}
+          >
+            {topic}
+          </button>
+        ))}
+      </div>
       {/* Area untuk menampilkan hasil */}
       <p className="output" dangerouslySetInnerHTML={{ __html: output }}></p>
+      {!showButtons && (
+        <button onClick={showTopicButtons}>Kembali ke Topik</button>
+      )}
     </div>
   );
 }
