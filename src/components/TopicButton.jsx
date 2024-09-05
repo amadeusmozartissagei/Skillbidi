@@ -1,31 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MarkdownIt from 'markdown-it';
 
 // Komponen TopicButton
-export default function TopicButton({ setPrompt, genAI, setState, setOutputMain }) {
+export default function TopicButton({ setPrompt, genAI, setState, setTopicQuestion }) {
   const topics = ['Communication', 'Time Management', 'Problem Solving', 'Critical Thinking'];
-  
+  const [output, setOutput] = useState(''); // Penulisan setOutput yang benar
   const [showButtons, setShowButtons] = useState(true);
-  const [output, setOutput] = useState('');
-  
+
   const hideTopicButtons = () => {
     setShowButtons(false);
   };
 
   const showTopicButtons = () => {
     setShowButtons(true);
-    setOutput('');
+    setOutput(' ')
   };
+
+  // useEffect(() => {
+  //   // Mengirim nilai output awal saat component pertama kali dimount
+  //   onOutputChange(output);
+  // }, [output, onOutputChange]);
 
   const handleClick = async (topic) => {
     setPrompt(topic);
     setState('answer');
-    setOutputMain(' ');
     hideTopicButtons();
 
     setOutput('Memproses...');
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const chat = model.startChat({
         history: [],
         generationConfig: {
@@ -37,7 +40,8 @@ export default function TopicButton({ setPrompt, genAI, setState, setOutputMain 
       const result = await chat.sendMessage(prompt);
 
       const md = new MarkdownIt();
-      setOutput(md.render(result.response.text()));
+      setOutput(md.render(result.response.text())); 
+      setTopicQuestion(result.response.value)
     } catch (e) {
       setOutput(`
         <div class="error-message">
@@ -63,11 +67,7 @@ export default function TopicButton({ setPrompt, genAI, setState, setOutputMain 
           </button>
         ))}
       </div>
-      {/* Area untuk menampilkan hasil */}
-      <p className="output" dangerouslySetInnerHTML={{ __html: output }}></p>
-      {!showButtons && (
-        <button onClick={showTopicButtons}>Kembali ke Topik</button>
-      )}
+      {!showButtons && <button onClick={showTopicButtons}>Kembali ke Topik</button>}
     </div>
   );
 }
