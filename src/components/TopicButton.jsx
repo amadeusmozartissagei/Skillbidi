@@ -35,7 +35,7 @@ export default function TopicButton({ setPrompt, genAI, setState, setTopicQuesti
         },
       });
 
-      const prompt = `Buat satu soal mengenai ${topic} tanpa memunculkan jawabannya.`;
+      const prompt = `Buat satu pertanyaan singkat mengenai ${topic} yang dapat dijawab dalam satu atau dua kalimat. Jangan berikan jawabannya.`;
       const result = await chat.sendMessage(prompt);
 
       const md = new MarkdownIt();
@@ -43,7 +43,7 @@ export default function TopicButton({ setPrompt, genAI, setState, setTopicQuesti
       setState('answer');
       // Update parentOutput in App component
       setParentOutput(output);
-      setTopicQuestion(result.response.value);
+      setTopicQuestion(result.response.text());
     } catch (e) {
       setParentOutput(`
         <div class="error-message">

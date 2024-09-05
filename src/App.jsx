@@ -69,20 +69,17 @@ export default function App() {
         console.log('ini state quiz');
       } else if (state === 'answer') {
         const userResponse = promptInputRef.current?.value || '';
-        const correctionPrompt = `Periksa jawaban berikut terhadap pertanyaan ini: ${
-          promptInputRef.current?.value || topicsQuestion
-        }. Jawaban: ${userResponse}. Berikan penjelasan singkat apakah jawaban benar atau salah, dan berikan jawaban yang benar jika salah.`;
+        const correctionPrompt = `Berikut adalah pertanyaan: "${topicsQuestion}". Jawaban pengguna: "${userResponse}". Evaluasi jawaban tersebut. Jika benar, berikan penjelasan singkat mengapa benar. Jika salah, berikan jawaban yang benar dan penjelasan singkat.`;
 
         const correctionResult = await chat.sendMessage(correctionPrompt);
         const md = new MarkdownIt();
-        newOutput = `<h3>Hasil Koreksi:</h3>${md.render(correctionResult.response.text())}`;
+        newOutput = `<h3>Hasil Evaluasi:</h3>${md.render(correctionResult.response.text())}`;
         setState('reset');
 
         if (promptInputRef.current) {
           promptInputRef.current.value = '';
           promptInputRef.current.placeholder = 'Klik untuk kembali ke awal';
         }
-        console.log('ini state answer');
       } else if (state === 'reset') {
         setState('quiz');
         newOutput = 'Hasil akan muncul di sini...';
