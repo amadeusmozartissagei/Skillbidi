@@ -98,7 +98,7 @@ export default function App() {
           `${prev}
           <div class="error-message">
             <hr>
-            <p>Terjadi kesalahan: Harap reload halaman ini.</p>
+            <p>Terjadi kesalahan: Harap reload halaman ini</p>
           </div>
         `
       );
