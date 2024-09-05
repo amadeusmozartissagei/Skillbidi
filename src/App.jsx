@@ -116,7 +116,7 @@ export default function App() {
           genAI={genAI}
           setState={setState}
           setTopicQuestion={setTopicQuestion}
-          setParentOutput={setParentOutput} // Pass setParentOutput as prop
+          setParentOutput={setParentOutput} 
         />
         <div className="prompt-box">
           <label>
