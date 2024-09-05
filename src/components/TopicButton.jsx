@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import MarkdownIt from 'markdown-it';
 
 // Komponen TopicButton
 export default function TopicButton({ setPrompt, genAI, setState, setTopicQuestion, setParentOutput }) {
-  const topics = ['Communication', 'Time Management', 'Problem Solving', 'Critical Thinking'];
-  const [showButtons, setShowButtons] = useState(true);
-
+  const resources = [{
+    text: "Communication",
+    img: "./images/comm.svg",
+    topic: "communication"
+  },{
+    text: "Time Management",
+    img: "./images/time-man.svg",
+    topic: "time-management"
+  },  {
+    text: "Problem-Solving",
+    img: "./images/prob-solv.svg",
+    topic: "problem-solving"
+  },{
+    text: "Critical Thinking",
+    img: "./images/crt-tkg.svg",
+    topic: "critical-thinking"
+  }];
+  
   const handleClick = async (topic) => {
     setPrompt(topic);
     setState('answer');
@@ -25,7 +40,7 @@ export default function TopicButton({ setPrompt, genAI, setState, setTopicQuesti
 
       const md = new MarkdownIt();
       const output = md.render(result.response.text());
-      setState('answer')
+      setState('answer');
       // Update parentOutput in App component
       setParentOutput(output);
       setTopicQuestion(result.response.value);
@@ -40,20 +55,18 @@ export default function TopicButton({ setPrompt, genAI, setState, setTopicQuesti
   };
 
   return (
-    <div>
-      <div className="topic-buttons">
-        {topics.map((topic, index) => (
-          <button
-            key={index}
-            type="button"
-            className="topic-btn"
-            data-topic={topic}
-            onClick={() => handleClick(topic)}
-          >
-            {topic}
-          </button>
-        ))}
-      </div>
+    <div className="topic-buttons grid grid-cols-1 md:grid-cols-2 gap-4">
+      {resources.map((resource, index) => (
+        <button
+          key={index}
+          type="button"
+          className="topic-btn border-2 border-[#E9E9E9] p-2 flex flex-row items-center rounded-xl font-medium"
+          onClick={() => handleClick(resource.topic)}
+        >
+          <img src={resource.img} alt={resource.text} className="mr-3" />
+          <p className="truncate">{resource.text}</p>
+        </button>
+      ))}
     </div>
   );
 }
