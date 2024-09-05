@@ -42,18 +42,18 @@ export default function App() {
 
   const handleSubmit = async (ev) => {
     ev.preventDefault();
-  
+
     if (!prompt) {
       setParentOutput('Topik tidak boleh kosong.');
       return;
     }
-  
+
     // Set the processing message
     setParentOutput('Memproses...');
-  
+
     try {
       let newOutput = 'Memproses...';
-  
+
       if (state === 'quiz') {
         const quizPrompt = `Berikan satu pertanyaan singkat tentang topik: ${prompt}`;
         const result = await chat.sendMessage(quizPrompt);
@@ -61,7 +61,7 @@ export default function App() {
         const questionText = result.response.text();
         newOutput = md.render(questionText);
         setState('answer');
-  
+
         if (promptInputRef.current) {
           promptInputRef.current.value = '';
           promptInputRef.current.placeholder = 'Masukkan jawaban Anda';
@@ -69,13 +69,15 @@ export default function App() {
         console.log('ini state quiz');
       } else if (state === 'answer') {
         const userResponse = promptInputRef.current?.value || '';
-        const correctionPrompt = `Periksa jawaban berikut terhadap pertanyaan ini: ${promptInputRef.current?.value || topicsQuestion}. Jawaban: ${userResponse}. Berikan penjelasan singkat apakah jawaban benar atau salah, dan berikan jawaban yang benar jika salah.`;
-  
+        const correctionPrompt = `Periksa jawaban berikut terhadap pertanyaan ini: ${
+          promptInputRef.current?.value || topicsQuestion
+        }. Jawaban: ${userResponse}. Berikan penjelasan singkat apakah jawaban benar atau salah, dan berikan jawaban yang benar jika salah.`;
+
         const correctionResult = await chat.sendMessage(correctionPrompt);
         const md = new MarkdownIt();
         newOutput = `<h3>Hasil Koreksi:</h3>${md.render(correctionResult.response.text())}`;
         setState('reset');
-  
+
         if (promptInputRef.current) {
           promptInputRef.current.value = '';
           promptInputRef.current.placeholder = 'Klik untuk kembali ke awal';
@@ -84,12 +86,12 @@ export default function App() {
       } else if (state === 'reset') {
         setState('quiz');
         newOutput = 'Hasil akan muncul di sini...';
-        
+
         if (promptInputRef.current) {
           promptInputRef.current.placeholder = 'Pilih topik atau masukkan topik baru';
         }
       }
-  
+
       // Update the output with the new content
       setParentOutput(newOutput);
     } catch (e) {
