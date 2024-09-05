@@ -111,7 +111,6 @@ export default function App() {
   const topics = ['Communication', 'Time Management', 'Problem Solving', 'Critical Thinking'];
   
   return (
-
     <div className="flex flex-col h-screen font-poppins">
       <Header />
 
