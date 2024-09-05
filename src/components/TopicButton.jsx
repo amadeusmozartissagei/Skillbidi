@@ -1,32 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import MarkdownIt from 'markdown-it';
 
 // Komponen TopicButton
-export default function TopicButton({ setPrompt, genAI, setState, setTopicQuestion }) {
+export default function TopicButton({ setPrompt, genAI, setState, setTopicQuestion, setParentOutput }) {
   const topics = ['Communication', 'Time Management', 'Problem Solving', 'Critical Thinking'];
-  const [output, setOutput] = useState(''); // Penulisan setOutput yang benar
   const [showButtons, setShowButtons] = useState(true);
-
-  const hideTopicButtons = () => {
-    setShowButtons(false);
-  };
-
-  const showTopicButtons = () => {
-    setShowButtons(true);
-    setOutput(' ')
-  };
-
-  // useEffect(() => {
-  //   // Mengirim nilai output awal saat component pertama kali dimount
-  //   onOutputChange(output);
-  // }, [output, onOutputChange]);
 
   const handleClick = async (topic) => {
     setPrompt(topic);
     setState('answer');
-    hideTopicButtons();
 
-    setOutput('Memproses...');
+    setParentOutput('Memproses...');
     try {
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const chat = model.startChat({
@@ -40,13 +24,16 @@ export default function TopicButton({ setPrompt, genAI, setState, setTopicQuesti
       const result = await chat.sendMessage(prompt);
 
       const md = new MarkdownIt();
-      setOutput(md.render(result.response.text())); 
-      setTopicQuestion(result.response.value)
+      const output = md.render(result.response.text());
+      setState('answer')
+      // Update parentOutput in App component
+      setParentOutput(output);
+      setTopicQuestion(result.response.value);
     } catch (e) {
-      setOutput(`
+      setParentOutput(`
         <div class="error-message">
           <hr>
-          <p>Terjadi kesalahan: ${e.message}</p>
+          <p>Terjadi kesalahan: Harap reload halaman ini.</p>
         </div>
       `);
     }
@@ -54,7 +41,7 @@ export default function TopicButton({ setPrompt, genAI, setState, setTopicQuesti
 
   return (
     <div>
-      <div className="topic-buttons" style={{ display: showButtons ? 'flex' : 'none' }}>
+      <div className="topic-buttons">
         {topics.map((topic, index) => (
           <button
             key={index}
@@ -67,7 +54,6 @@ export default function TopicButton({ setPrompt, genAI, setState, setTopicQuesti
           </button>
         ))}
       </div>
-      {!showButtons && <button onClick={showTopicButtons}>Kembali ke Topik</button>}
     </div>
   );
 }
