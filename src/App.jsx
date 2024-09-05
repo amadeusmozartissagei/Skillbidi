@@ -5,7 +5,7 @@ import MarkdownIt from 'markdown-it';
 import { maybeShowApiKeyBanner } from '../gemini-api-banner';
 import Header from './components/header';
 
-const API_KEY = 'AIzaSyArLHGCVHh-x2eINAJJhPlCdtNkJba5LwA';
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 export default function App() {
   const [state, setState] = useState('quiz');
