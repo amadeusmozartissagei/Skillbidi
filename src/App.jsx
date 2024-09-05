@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import TopicButton from './components/TopicButton';
-import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
-import MarkdownIt from 'markdown-it';
-import { maybeShowApiKeyBanner } from '../gemini-api-banner';
 
-const API_KEY = 'AIzaSyArLHGCVHh-x2eINAJJhPlCdtNkJba5LwA';
+import React from "react";
+import Header from "./components/header";
+import Button from "./components/button";
+
 
 export default function App() {
   const [state, setState] = useState('quiz');
@@ -107,42 +105,99 @@ export default function App() {
   
 
   return (
-    <div>
-      <h1>Skillbidi: </h1>
-      <h3>Turn Your Free Time into Skill Time!</h3>
-      <form onSubmit={handleSubmit}>
-        <TopicButton
-          setPrompt={setPrompt}
-          genAI={genAI}
-          setState={setState}
-          setTopicQuestion={setTopicQuestion}
-          setParentOutput={setParentOutput} 
-        />
-        <div className="prompt-box">
-          <label>
+    <div className="flex flex-col h-screen font-poppins">
+      <Header />
+
+      <div className="flex flex-col h-full items-center justify-center">
+        <form className="w-full h-full flex flex-col justify-center items-center">
+          <div className="flex flex-grow flex-col w-full justify-center items-center ">
+            <h1 className="font-semibold text-3xl ml:text-4xl md:text-6xl mb-2 md:mb-4 text-center">
+              Welcome to Skillbidi
+            </h1>
+            <h3 className="text-[#BDBFC3] text-lg md:text-2xl mb-4 md:mb-8 text-center">
+              Turn Your Free Time into Skill Time!
+            </h3>
+
+            <div className="topic-buttons grid grid-cols-1 ml:grid-cols-2 w-11/12 md:w-5/12 gap-x-4 gap-y-2">
+              <Button
+                text="Communication"
+                topic="communication"
+                img="./images/comm.svg"
+              />
+              <Button
+                text="Time Management"
+                topic="time-management"
+                img="./images/time-man.svg"
+              />
+              <Button
+                text="Problem-Solving"
+                topic="problem-solving"
+                img="./images/prob-solv.svg"
+              />
+              <Button
+                text="Critical Thinking"
+                topic="critical-thinking"
+                img="./images/crt-tkg.svg"
+              />
+            </div>
+          </div>
+          <div className="prompt-box flex justify-center w-full mb-10 z-0">
+            <label
+              htmlFor="default-search"
+              className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+            >
+              Search
+            </label>
+            <div className="relative w-10/12 md:w-8/12">
+              <input
+                name="prompt"
+                type="text"
+                id="default-search"
+                className="block w-full p-4 text-sm text-gray-900 border-2 border-[#8BC6F2] rounded-full bg-white focus:ring-[#BDAFEE] focus:border-[#BDAFEE] placeholder:truncate z-0"
+                placeholder="To kill some time, I'm gonna learn about .... "
+                required
+              />
+              <button
+                type="submit"
+                id="submit-button"
+                className="text-white absolute end-2.5 bottom-1.5 bg-white focus:ring-4  font-medium rounded-full p-2"
+              >
+                <img src="./images/send.svg" alt="" />
+              </button>
+            </div>
+            {/* <label className="w-8/12 flex flex-row relative">
             <input
-              ref={promptInputRef}
               name="prompt"
-              placeholder={
-                state === 'quiz'
-                  ? "To kill some time, I'm gonna learn about .... "
-                  : 'Masukkan jawaban Anda'
-              }
+              placeholder="To kill some time, I'm gonna learn about .... "
               type="text"
-              onChange={(e) => setPrompt(e.target.value)}
-              disabled={state === 'reset'}
+              className="rounded-full w-full border-2 border-[#8BC6F2]"
             />
-          </label>
-          <button type="submit" id="submit-button">
-            {state === 'reset' ? 'Mulai Lagi' : 'Go'}
-          </button>
+            <img src="./images/send.svg" alt="" className="w-10 h-10"/>
+          </label> */}
+            {/* <button type="submit" id="submit-button">
+            Go
+          </button> */}
+          </div>
+        </form>
+
+        {/* <p className="output">results will appear here...</p>
+        <div id="answerSection" style={{ display: "none" }}>
+          <input type="text" id="userAnswer" placeholder="Jawaban Anda" />
+          <button id="submitAnswerBtn">Submit Answer</button>
+          <div id="feedback"></div>
+          <div className="button-group">
+            <button id="nextQuestionBtn" style={{ display: "none" }}>
+              Pertanyaan Selanjutnya
+            </button>
+            <button id="correctAnswerBtn" style={{ display: "none" }}>
+              Koreksi Jawaban Lagi
+            </button>
+          </div>
         </div>
-      </form>
-      <p
-        className="output"
-        ref={outputRef}
-        dangerouslySetInnerHTML={{ __html: parentOutput }}
-      ></p>
+
+        <script type="module" src="./utils/main.js"></script> */}
+      </div>
+
     </div>
   );
 }
