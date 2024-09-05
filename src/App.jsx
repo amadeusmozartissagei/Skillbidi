@@ -83,7 +83,7 @@ export default function App() {
       } else if (state === 'reset') {
         setState('quiz');
         newOutput = 'Hasil akan muncul di sini...';
-  
+        
         if (promptInputRef.current) {
           promptInputRef.current.placeholder = 'Pilih topik atau masukkan topik baru';
         }
@@ -130,6 +130,7 @@ export default function App() {
               }
               type="text"
               onChange={(e) => setPrompt(e.target.value)}
+              disabled={state === 'reset'}
             />
           </label>
           <button type="submit" id="submit-button">
