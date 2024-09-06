@@ -120,6 +120,8 @@ export default function App() {
     }
   };
 
+  const buttonImage = (state === "reset" ? './images/reset.svg' : "./images/send.svg") ;
+
   const topics = [
     "Communication",
     "Time Management",
@@ -134,11 +136,7 @@ export default function App() {
       <div className="flex flex-col flex-grow">
         <form
           className="w-full h-full flex flex-col justify-center items-center"
-          onSubmit={async (e) => {
-            e.preventDefault();
-            await handleSubmit(e);
-            await messageHandler();
-          }}
+          onSubmit={handleSubmit}
         >
           <div className="flex flex-grow flex-col w-full justify-center items-center">
                 <h1 className="logo font-semibold text-3xl ml:text-4xl md:text-6xl mb-2 md:mb-4 text-center">
@@ -147,7 +145,7 @@ export default function App() {
                 <h3 className="text-[#BDBFC3] text-lg md:text-2xl mb-4 md:mb-8 text-center">
                   Turn Your Free Time into Skill Time!
                 </h3>
-            {message ? (
+            {(state === "quiz") ? (
               <>
                 <div className="topic-buttons grid grid-cols-1 ml:grid-cols-2 w-11/12 md:w-5/12 gap-x-4 gap-y-2">
                   <TopicButton
@@ -197,7 +195,7 @@ export default function App() {
                 id="submit-button"
                 className="text-white absolute end-2.5 bottom-1 bg-white focus:ring-4 font-medium rounded-full p-2"
               >
-                <img src="./images/send.svg" alt="" />
+                <img src={buttonImage} alt="" />
               </button>
             </div>
           </div>
