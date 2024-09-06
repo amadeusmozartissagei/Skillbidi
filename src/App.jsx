@@ -11,7 +11,7 @@ import TopicButton from "./components/TopicButton";
 import Header from "./components/header";
 import { ClipLoader } from "react-spinners";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const API_KEY = process.env.VITE_GEMINI_API_KEY;
 
 export default function App() {
   const [state, setState] = useState("quiz");
