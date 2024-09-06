@@ -8,6 +8,6 @@ export default defineConfig({
     outDir: 'dist', // Specify your output directory for build
   },
   server: {
-    port: 3000, // Set the port for the development server
+    port: 5173, // Set the port for the development server
   },
 });

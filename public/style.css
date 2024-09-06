@@ -41,7 +41,7 @@ h1 {
   font-size: 24px;
 }
 
-h1::before {
+h1.logo::before {
   content: '';
   display: inline-block;
   background: url(gemini.svg);

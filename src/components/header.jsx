@@ -5,7 +5,7 @@ export default function Header() {
     <div className="flex flex-row justify-between px-4 md:px-7 py-4">
       <div className="flex flex-row items-center">
         {/* <img src="/images/gemini.svg" alt="" className="w-10 h-10" /> */}
-        <h1 className="font-poppins font-medium text-2xl">Skillbidi</h1>
+        <h1 className="font-poppins font-medium text-2xl logo">Skillbidi</h1>
       </div>
       <Popup />
     </div>
