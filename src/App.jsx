@@ -100,7 +100,7 @@ export default function App() {
 
         if (promptInputRef.current) {
           promptInputRef.current.value = "";
-          promptInputRef.current.placeholder = "Klik untuk kembali ke awal";
+          promptInputRef.current.placeholder = "Up for another round of skill time? ;) --->";
         }
       } else if (state === "reset") {
         setState("quiz");
@@ -196,7 +196,7 @@ export default function App() {
                 placeholder={
                   state === "quiz"
                     ? "To kill some time, I'm gonna learn about .... "
-                    : "Masukkan jawaban Anda"
+                    : "You can just reply here ;)"
                 }
                 required
                 onChange={(e) => setPrompt(e.target.value)}
