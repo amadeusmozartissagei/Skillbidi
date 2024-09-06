@@ -42,6 +42,15 @@ export default function App() {
     setMessage(false);
   };
 
+  const sendMessageToGemini = async (prompt) => {
+    try {
+      const result = await chat.sendMessage(prompt);
+      return result.response.text();
+    } catch (error) {
+      console.error("Error sending message to Gemini:", error);
+      throw error;
+    }
+  };
 
   useEffect(() => {
     maybeShowApiKeyBanner(API_KEY);
@@ -63,62 +72,52 @@ export default function App() {
       return;
     }
 
-    // Set the processing message
     setIsProcessing(true);
     setParentOutput("Memproses...");
 
     try {
       let newOutput = "Memproses...";
+      const md = new MarkdownIt();
 
       if (state === "quiz") {
         const quizPrompt = `Berikan satu pertanyaan singkat tentang topik: ${prompt}`;
-        const result = await chat.sendMessage(quizPrompt);
-        const md = new MarkdownIt();
-        const questionText = result.response.text();
+        const questionText = await sendMessageToGemini(quizPrompt);
         newOutput = md.render(questionText);
         setState("answer");
+        setTopicQuestion(questionText);
 
         if (promptInputRef.current) {
           promptInputRef.current.value = "";
           promptInputRef.current.placeholder = "Masukkan jawaban Anda";
         }
-        console.log("ini state quiz");
       } else if (state === "answer") {
         const userResponse = promptInputRef.current?.value || "";
         const correctionPrompt = `Berikut adalah pertanyaan: "${topicsQuestion}". Jawaban pengguna: "${userResponse}". Evaluasi jawaban tersebut. Jika benar, berikan penjelasan singkat mengapa benar. Jika salah, berikan jawaban yang benar dan penjelasan singkat.`;
 
-        const correctionResult = await chat.sendMessage(correctionPrompt);
-        const md = new MarkdownIt();
-        newOutput = `<h3>Hasil Evaluasi:</h3>${md.render(
-          correctionResult.response.text()
-        )}`;
+        const correctionText = await sendMessageToGemini(correctionPrompt);
+        newOutput = `<h3>Hasil Evaluasi:</h3>${md.render(correctionText)}`;
         setState("reset");
 
         if (promptInputRef.current) {
           promptInputRef.current.value = "";
-          promptInputRef.current.placeholder = "Up for another round of skill time? ;) --->";
+          promptInputRef.current.placeholder = "Klik untuk kembali ke awal";
         }
       } else if (state === "reset") {
         setState("quiz");
         newOutput = "Hasil akan muncul di sini...";
 
         if (promptInputRef.current) {
-          promptInputRef.current.placeholder =
-            "Pilih topik atau masukkan topik baru";
+          promptInputRef.current.placeholder = "Pilih topik atau masukkan topik baru";
         }
       }
 
-      // Update the output with the new content
       setParentOutput(newOutput);
     } catch (e) {
       setParentOutput(
-        (prev) =>
-          `${prev}
-          <div class="error-message">
-            <hr>
-            <p>Terjadi kesalahan: Harap reload halaman ini</p>
-          </div>
-        `
+        `<div class="error-message">
+          <hr>
+          <p>Terjadi kesalahan: Harap reload halaman ini</p>
+        </div>`
       );
       console.error("Error processing the request:", e);
     } finally {
@@ -197,7 +196,7 @@ export default function App() {
                 placeholder={
                   state === "quiz"
                     ? "To kill some time, I'm gonna learn about .... "
-                    : "You can just reply here ;)"
+                    : "Masukkan jawaban Anda"
                 }
                 required
                 onChange={(e) => setPrompt(e.target.value)}
