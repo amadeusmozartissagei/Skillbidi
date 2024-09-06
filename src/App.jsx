@@ -96,7 +96,7 @@ export default function App() {
 
         if (promptInputRef.current) {
           promptInputRef.current.value = "";
-          promptInputRef.current.placeholder = "Klik untuk kembali ke awal";
+          promptInputRef.current.placeholder = "Up for another round of skill time? ;) --->";
         }
       } else if (state === "reset") {
         setState("quiz");
@@ -134,6 +134,13 @@ export default function App() {
     "Problem Solving",
     "Critical Thinking",
   ];
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      handleSubmit(event);
+    }
+  };
 
   return (
     <div className="flex flex-col h-screen font-poppins">
@@ -194,6 +201,7 @@ export default function App() {
                 }
                 required
                 onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={handleKeyDown}
                 disabled={state === "reset"}
               />
               <button
