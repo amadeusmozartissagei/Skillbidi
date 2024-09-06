@@ -80,7 +80,7 @@ export default function App() {
 
         if (promptInputRef.current) {
           promptInputRef.current.value = "";
-          promptInputRef.current.placeholder = "Masukkan jawaban Anda";
+          promptInputRef.current.placeholder = "You can just reply here ;)";
         }
         console.log("ini state quiz");
       } else if (state === "answer") {
