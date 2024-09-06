@@ -10,6 +10,7 @@ import { maybeShowApiKeyBanner } from "../gemini-api-banner";
 import TopicButton from "./components/TopicButton";
 import Header from "./components/header";
 import { ClipLoader } from "react-spinners";
+import Popup from "./components/Popup1";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -144,7 +145,8 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen font-poppins">
       <Header />
-
+      <Popup />
+      
       <div className="flex flex-col flex-grow">
         <form
           className="w-full h-full flex flex-col justify-center items-center"

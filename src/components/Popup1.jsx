@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 
 export default function Popup() {
-    const [popup, setPopup] = useState(false);
+    const [popup, setPopup] = useState(true);
 
     const togglePopup = () => {
       setPopup(!popup);
@@ -9,10 +9,6 @@ export default function Popup() {
 
   return (
     <>
-      <button onClick={togglePopup} className="btn-popup">
-        <img src="/images/question.svg" alt="" />
-      </button>
-
       {popup && (
         <div className="modal w-screen h-screen inset-0 fixed z-50">
         <div className="overlay w-screen h-screen inset-0 fixed bg-slate-800/[0.5]" onClick={togglePopup}></div>
@@ -20,7 +16,7 @@ export default function Popup() {
           {/* Header */}
           <div className="flex items-center justify-center p-4 md:p-5 border-b rounded-t dark:border-gray-600">
             <h3 className="text-3xl font-semibold text-gray-900 dark:text-white">
-              About Skillbidi
+              Selamat Datang di Skillbidi
             </h3>
           </div>
           {/* <!-- Modal body --> */}
@@ -42,7 +38,6 @@ export default function Popup() {
         </div>
       </div>
       )}
-
     </>
   );
 }
