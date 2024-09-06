@@ -9,6 +9,7 @@ import MarkdownIt from "markdown-it";
 import { maybeShowApiKeyBanner } from "../gemini-api-banner";
 import TopicButton from "./components/TopicButton";
 import Header from "./components/header";
+import { ClipLoader } from "react-spinners";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -22,6 +23,9 @@ export default function App() {
   const outputRef = useRef(null);
   const [topicsQuestion, setTopicQuestion] = useState(" ");
   const [message, setMessage] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [chat, setChat] = useState(null);
+  
 
   const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({
@@ -38,7 +42,6 @@ export default function App() {
     setMessage(false);
   };
 
-  const [chat, setChat] = useState(null);
 
   useEffect(() => {
     maybeShowApiKeyBanner(API_KEY);
@@ -61,6 +64,7 @@ export default function App() {
     }
 
     // Set the processing message
+    setIsProcessing(true);
     setParentOutput("Memproses...");
 
     try {
@@ -117,6 +121,8 @@ export default function App() {
         `
       );
       console.error("Error processing the request:", e);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -139,28 +145,28 @@ export default function App() {
           onSubmit={handleSubmit}
         >
           <div className="flex flex-grow flex-col w-full justify-center items-center">
-                <h1 className="logo font-semibold text-3xl ml:text-4xl md:text-6xl mb-2 md:mb-4 text-center">
-                  Welcome to Skillbidi
-                </h1>
-                <h3 className="text-[#BDBFC3] text-lg md:text-2xl mb-4 md:mb-8 text-center">
-                  Turn Your Free Time into Skill Time!
-                </h3>
-            {(state === "quiz") ? (
-              <>
-                <div className="topic-buttons grid grid-cols-1 ml:grid-cols-2 w-11/12 md:w-5/12 gap-x-4 gap-y-2">
-                  <TopicButton
-                    setPrompt={setPrompt}
-                    genAI={genAI}
-                    setState={setState}
-                    setTopicQuestion={setTopicQuestion}
-                    setParentOutput={setParentOutput}
-                  />
-                </div>
-              </>
+            <h1 className="logo font-semibold text-3xl ml:text-4xl md:text-6xl mb-2 md:mb-4 text-center">
+              Welcome to Skillbidi
+            </h1>
+            <h3 className="text-[#BDBFC3] text-lg md:text-2xl mb-4 md:mb-8 text-center">
+              Turn Your Free Time into Skill Time!
+            </h3>
+            {isProcessing ? (
+              <ClipLoader size={50} color={"#8BC6F2"} />
+            ) : state === "quiz" ? (
+              <div className="topic-buttons grid grid-cols-1 ml:grid-cols-2 w-11/12 md:w-5/12 gap-x-4 gap-y-2">
+                <TopicButton
+                  setPrompt={setPrompt}
+                  genAI={genAI}
+                  setState={setState}
+                  setTopicQuestion={setTopicQuestion}
+                  setParentOutput={setParentOutput}
+                />
+              </div>
             ) : (
-              <div className="w-8/12 font-semibold text-lg">
+              <div className="w-10/12 font-semibold text-lg">
                 <div
-                  className="output"
+                  className="output bg-blue-100 border-2 border-blue-400 p-4 rounded-xl shadow-md"
                   ref={outputRef}
                   dangerouslySetInnerHTML={{ __html: parentOutput }}
                 ></div>
@@ -180,7 +186,7 @@ export default function App() {
                 ref={promptInputRef}
                 type="text"
                 id="default-search"
-                className="block w-full p-4 h-14 text-sm text-gray-900 rounded-3xl bg-white placeholder:truncate z-0"
+                className="block w-full p-4 h-14 text-sm focus:ring-blue-400 focus:border-blue-400 text-gray-900 rounded-3xl bg-white placeholder:truncate z-0"
                 placeholder={
                   state === "quiz"
                     ? "To kill some time, I'm gonna learn about .... "
