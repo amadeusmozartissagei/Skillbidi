@@ -80,7 +80,7 @@ export default function App() {
 
         if (promptInputRef.current) {
           promptInputRef.current.value = "";
-          promptInputRef.current.placeholder = "You can just reply here ;)";
+          promptInputRef.current.placeholder = "Masukkan jawaban Anda";
         }
         console.log("ini state quiz");
       } else if (state === "answer") {
@@ -197,7 +197,7 @@ export default function App() {
                 placeholder={
                   state === "quiz"
                     ? "To kill some time, I'm gonna learn about .... "
-                    : "Masukkan jawaban Anda"
+                    : "You can just reply here ;)"
                 }
                 required
                 onChange={(e) => setPrompt(e.target.value)}
