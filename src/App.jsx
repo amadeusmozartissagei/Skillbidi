@@ -4,6 +4,7 @@ import {
   HarmBlockThreshold,
   HarmCategory,
 } from "@google/generative-ai";
+import TextareaAutosize from 'react-textarea-autosize';
 import MarkdownIt from "markdown-it";
 import { maybeShowApiKeyBanner } from "../gemini-api-banner";
 import TopicButton from "./components/TopicButton";
@@ -169,19 +170,19 @@ export default function App() {
             )}
           </div>
           <div className="prompt-box flex justify-center w-full mb-10 z-0">
-            <div className="relative w-10/12 md:w-8/12">
+            <div className="relative w-10/12 md:w-8/12 border border-[#8BC6F2] rounded-3xl group">
               <label
                 htmlFor="default-search"
                 className="mb-2 text-sm font-medium text-gray-900 sr-only"
               >
                 Search
               </label>
-              <input
+              <TextareaAutosize
                 name="prompt"
                 ref={promptInputRef}
                 type="text"
                 id="default-search"
-                className="block w-full p-4 text-sm text-gray-900 border-2 border-[#8BC6F2] rounded-full bg-white focus:ring-[#BDAFEE] focus:border-[#BDAFEE] placeholder:truncate z-0"
+                className="block w-full p-4 h-14 text-sm text-gray-900 rounded-3xl bg-white placeholder:truncate z-0"
                 placeholder={
                   state === "quiz"
                     ? "To kill some time, I'm gonna learn about .... "
@@ -194,7 +195,7 @@ export default function App() {
               <button
                 type="submit"
                 id="submit-button"
-                className="text-white absolute end-2.5 bottom-1.5 bg-white focus:ring-4 font-medium rounded-full p-2"
+                className="text-white absolute end-2.5 bottom-1 bg-white focus:ring-4 font-medium rounded-full p-2"
               >
                 <img src="./images/send.svg" alt="" />
               </button>
